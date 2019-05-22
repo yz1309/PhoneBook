@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_word"
+        android:paddingTop="@dimen/space_5"
+        android:paddingBottom="@dimen/space_5"
+        android:paddingLeft="@dimen/space_15"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/commom_bg_colors"
+        android:gravity="center_vertical"/>
+
+    <LinearLayout
+        android:background="@drawable/common_bg"
+        android:padding="@dimen/space_10"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/iv_header"
+            android:layout_width="@dimen/space_50"
+            android:layout_height="@dimen/space_50"
+            android:src="@mipmap/icon_contact_default"
+            android:scaleType="fitXY"
+            app:riv_border_color="@color/line"
+            app:riv_border_width="@dimen/space_1"
+            app:riv_corner_radius="@dimen/space_5"
+            />
+
+        <TextView
+
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+            android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+    </LinearLayout>
+
+
+</LinearLayout>

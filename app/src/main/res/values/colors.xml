@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#149d73</color>
+    <color name="colorPrimaryDark">#117858</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="gray">#999999</color>
+    <color name="line">#c1bfbf</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="tab_txt_normal">#7b7b7b</color>
+
+
+    <color name="commom_bg_colors">#f8f8f8</color>
+
+
+
+    <color name="text_333">#333333</color>
+    <color name="text_666">#666666</color>
+    <color name="text_999">#999999</color>
+</resources>

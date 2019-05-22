@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_main_top_search"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_back"
+            android:background="@drawable/common_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingRight="@dimen/space_10"
+            android:paddingLeft="@dimen/space_10">
+
+            <ImageView
+                android:layout_width="@dimen/space_30"
+                android:layout_height="@dimen/space_30"
+                android:src="@mipmap/icon_back"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_contact_list_search"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:background="@null"
+            android:hint="搜索"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <sdlcjt.cn.app.sdlcjtphone.ui.view.LineView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/space_1"
+        app:line_color="@color/line"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/list"
+            android:dividerHeight="@dimen/space_1"
+            android:divider="@color/commom_bg_colors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"/>
+
+        <sdlcjt.cn.app.sdlcjtphone.contact.view.WordsNavigation
+            android:id="@+id/words"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"/>
+
+        <TextView
+            android:id="@+id/tv_contact_tag"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/tvstyle"
+            android:gravity="center"
+            android:textSize="40sp"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_contact_num"
+        android:layout_gravity="center"
+        android:textColor="@color/text_999"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
+</LinearLayout>

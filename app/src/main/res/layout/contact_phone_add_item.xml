@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:background="@drawable/common_bg"
+              android:gravity="center_horizontal"
+              android:padding="@dimen/space_5"
+              android:layout_gravity="center_horizontal"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_contact_phone_list_item_phone"
+            android:layout_gravity="center"
+            android:text="@string/phone"
+            android:layout_width="@dimen/space_80"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+
+        <EditText
+            android:id="@+id/et_contact_phone_list_item_phone"
+            android:background="@null"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:inputType="phone"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+            android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+
+        <ImageView
+            android:id="@+id/iv_contact_phone_list_item_phone_del"
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/icon_del_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <sdlcjt.cn.app.sdlcjtphone.ui.view.LineView
+        android:background="@color/line"
+        android:layout_marginLeft="@dimen/space_60"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/space_1"/>
+
+</LinearLayout>

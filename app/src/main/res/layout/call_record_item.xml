@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/common_bg"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:paddingTop="@dimen/space_10"
+    android:paddingLeft="@dimen/space_10"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:id="@+id/iv_call_record_item_outgoing"
+        android:layout_marginRight="@dimen/space_5"
+        android:layout_marginTop="@dimen/space_5"
+        android:src="@mipmap/icon_call_outgoing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tv_call_record_item_name"
+        android:text="333"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:layout_toRightOf="@id/iv_call_record_item_outgoing"
+        android:textSize="@dimen/text_size_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <TextView
+        android:id="@+id/tv_call_record_item_date"
+        android:text="4444"
+        android:layout_alignParentRight="true"
+        android:paddingRight="@dimen/space_10"
+        android:textColor="@color/text_999"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tv_call_record_item_phone"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:layout_below="@id/tv_call_record_item_name"
+        android:paddingBottom="@dimen/space_10"
+        android:textColor="@color/text_999"
+        android:layout_toRightOf="@id/iv_call_record_item_outgoing"
+        android:textSize="@dimen/text_size_14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <sdlcjt.cn.app.sdlcjtphone.ui.view.LineView
+        android:layout_toRightOf="@id/iv_call_record_item_outgoing"
+        android:layout_below="@id/tv_call_record_item_phone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/space_1"
+        app:line_color="@color/line"/>
+
+</RelativeLayout>

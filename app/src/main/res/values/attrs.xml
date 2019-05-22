@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LineView">
+        <attr name="line_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="LineVerticalView">
+        <attr name="line_vertical_color" format="color" />
+    </declare-styleable>
+
+</resources>

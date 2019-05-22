@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">电话</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_call">拨号</string>
+    <string name="tab_call_log">通话记录</string>
+    <string name="tab_contact">联系人</string>
+    <string name="contact_detail">联系人详情</string>
+    <string name="phone">电话</string>
+    <string name="contact_add">新增联系人</string>
+    <string name="save">保存</string>
+    <string name="name">姓名</string>
+</resources>
