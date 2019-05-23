@@ -35,6 +35,7 @@ import sdlcjt.cn.app.sdlcjtphone.contact.bean.Person;
 import sdlcjt.cn.app.sdlcjtphone.contact.bean.PersonResultEvent;
 import sdlcjt.cn.app.sdlcjtphone.entity.StatusResultEvent;
 import sdlcjt.cn.app.sdlcjtphone.utils.AndroidsUtils;
+import sdlcjt.cn.app.sdlcjtphone.utils.ULogger;
 
 /**
  * 联系人详情
@@ -121,22 +122,18 @@ public class ContactDetailActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    // TODO 先删除子表
-                    ArrayList<ContentProviderOperation> opsRawContact = new ArrayList<>();
-                    opsRawContact.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-                            .withSelection("raw_contact_id = ? ", new String[]{String.valueOf(person.getRaw_contact_id())})
-                            .build());
 
-                    getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsRawContact);
-
-
-                    // TODO 再删除主表
                     ArrayList<ContentProviderOperation> opsData = new ArrayList<>();
                     opsData.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
                             .withSelection("_id = ? ", new String[]{String.valueOf(person.getRaw_contact_id())})
                             .build());
+                    opsData.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                            .withSelection("raw_contact_id = ? ", new String[]{String.valueOf(person.getRaw_contact_id())})
+                            .build());
+
                     getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsData);
 
+                    ULogger.e("RawContacts\nraw_contact_id="+person.getRaw_contact_id()+"\nname="+person.getName());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

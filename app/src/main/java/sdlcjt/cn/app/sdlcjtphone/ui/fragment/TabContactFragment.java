@@ -45,6 +45,7 @@ import sdlcjt.cn.app.sdlcjtphone.contact.adapter.ContactAdapter;
 import sdlcjt.cn.app.sdlcjtphone.contact.bean.Person;
 import sdlcjt.cn.app.sdlcjtphone.contact.view.WordsNavigation;
 import sdlcjt.cn.app.sdlcjtphone.entity.StatusResultEvent;
+import sdlcjt.cn.app.sdlcjtphone.utils.ULogger;
 
 import static com.lzy.okgo.utils.HttpUtils.runOnUiThread;
 
@@ -261,21 +262,24 @@ public class TabContactFragment extends Fragment implements
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Uri uri = Uri.parse("content://com.android.contacts/contacts"); //访问raw_contacts表
+                //Uri uri = Uri.parse("content://com.android.contacts/contacts"); //访问raw_contacts表
+                Uri uriRawContacts = ContactsContract.RawContacts.CONTENT_URI; //访问raw_contacts表
                 ContentResolver resolver = getActivity().getContentResolver();
-                Cursor cursor = resolver.query(uri, new String[]{"_id"}, null, null, null);
+                Cursor cursor = resolver.query(uriRawContacts, new String[]{"_id"}, null, null, null);
+                StringBuffer sb = new StringBuffer();
                 while (cursor.moveToNext()) {
                     //获得id并且在data中寻找数据
-                    int tempId = cursor.getInt(0);
-                    uri = Uri.parse("content://com.android.contacts/contacts/" + tempId + "/data");
+                    int raw_contact_id = cursor.getInt(0);
+                    //Uri uriData = Uri.parse("content://com.android.contacts/contacts/" + tempId + "/data");
+                    Uri uriData = ContactsContract.Data.CONTENT_URI;
                     //data1存储各个记录的总数据，mimetype存放记录的类型，如电话、email等
-                    Cursor cursor2 = resolver.query(uri, new String[]{
+                    Cursor cursor2 = resolver.query(uriData, new String[]{
                             "data1",
                             "mimetype"
-                    }, null, null, null);
+                    }, "raw_contact_id = ? ", new String[]{String.valueOf(raw_contact_id)}, null);
 
 
-                    byte[] bytes = getPhoto(getActivity().getContentResolver(), tempId + "");
+                    byte[] bytes = getPhoto(getActivity().getContentResolver(), raw_contact_id + "");
                     String name = "";
                     List<String> phoneList = new ArrayList<>();
                     String phone = "";
@@ -295,13 +299,15 @@ public class TabContactFragment extends Fragment implements
                         }
                     }
                     if (!TextUtils.isEmpty(phone)) {
-                        Person person = new Person(tempId, mimetypeforname, mimetypeforphone, name, phoneList, bytes);
+                        sb.append("\nraw_contact_id="+raw_contact_id+",name="+name);
+                        Person person = new Person(raw_contact_id, mimetypeforname, mimetypeforphone, name, phoneList, bytes);
                         list.add(person);
                     }
                 }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        ULogger.e("TabContact\n"+sb.toString());
                         //对集合排序
                         Collections.sort(list, new Comparator<Person>() {
                             @Override
@@ -311,7 +317,12 @@ public class TabContactFragment extends Fragment implements
                             }
                         });
                         initListView(list);
-                        tvContactNum.setText(list.size() + "位联系人");
+                        if (list.size() == 0){
+                            tvContactNum.setVisibility(View.GONE);
+                        }
+                        else {
+                            tvContactNum.setText(list.size() + "位联系人");
+                        }
                     }
                 });
             }

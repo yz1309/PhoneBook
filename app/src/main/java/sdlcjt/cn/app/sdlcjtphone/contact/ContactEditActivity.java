@@ -131,22 +131,22 @@ public class ContactEditActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Uri uri = Uri.parse("content://com.android.contacts/raw_contacts");
+                    Uri uriRawContact = ContactsContract.RawContacts.CONTENT_URI;
                     ContentResolver resolver = getContentResolver();
                     ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
                     // 向raw_contact表添加一条记录
                     //此处.withValue("account_name", null)一定要加，不然会抛NullPointerException
                     ContentProviderOperation operation1 = ContentProviderOperation
-                            .newInsert(uri).withValue("account_name", null).build();
+                            .newInsert(uriRawContact).withValue("account_name", null).build();
                     operations.add(operation1);
 
                     // 向data添加数据
-                    uri = Uri.parse("content://com.android.contacts/data");
+                    Uri uriData = ContactsContract.Data.CONTENT_URI;
 
                     if (bitmap != null) {
                         //添加头像
                         ContentProviderOperation operationHeaderPic = ContentProviderOperation
-                                .newInsert(uri).withValueBackReference("raw_contact_id", 0)
+                                .newInsert(uriData).withValueBackReference("raw_contact_id", 0)
                                 //withValueBackReference的第二个参数表示引用operations[0]的操作的返回id作为此值
                                 .withValue("mimetype", "vnd.android.cursor.item/photo")
                                 .withValue("data15", AndroidsUtils.bitmap2Bytes(bitmap))
@@ -155,7 +155,7 @@ public class ContactEditActivity extends AppCompatActivity {
                     }
                     //添加姓名
                     ContentProviderOperation operationName = ContentProviderOperation
-                            .newInsert(uri).withValueBackReference("raw_contact_id", 0)
+                            .newInsert(uriData).withValueBackReference("raw_contact_id", 0)
                             //withValueBackReference的第二个参数表示引用operations[0]的操作的返回id作为此值
                             .withValue("mimetype", "vnd.android.cursor.item/name")
                             .withValue("data1", name)
@@ -164,7 +164,7 @@ public class ContactEditActivity extends AppCompatActivity {
                     for (int i = 0; i < getPhoneNumList().size(); i++) {
                         //添加手机数据
                         ContentProviderOperation operationPhone = ContentProviderOperation
-                                .newInsert(uri).withValueBackReference("raw_contact_id", 0)
+                                .newInsert(uriData).withValueBackReference("raw_contact_id", 0)
                                 .withValue("mimetype", "vnd.android.cursor.item/phone_v2")
                                 .withValue("data1", getPhoneNumList().get(i))
                                 .withValue("data2", i == 0 ? "2" : "7").build();
@@ -173,7 +173,7 @@ public class ContactEditActivity extends AppCompatActivity {
                         operations.add(operationPhone);
                     }
 
-                    resolver.applyBatch("com.android.contacts", operations);
+                    resolver.applyBatch(ContactsContract.AUTHORITY, operations);
 
                     runOnUiThread(new Runnable() {
                         @Override

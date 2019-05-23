@@ -39,6 +39,7 @@ import sdlcjt.cn.app.sdlcjtphone.ui.fragment.TabCallFragment;
 import sdlcjt.cn.app.sdlcjtphone.ui.fragment.TabCallLogFragment;
 import sdlcjt.cn.app.sdlcjtphone.ui.fragment.TabContactFragment;
 import sdlcjt.cn.app.sdlcjtphone.ui.view.PagerAdapter;
+import sdlcjt.cn.app.sdlcjtphone.utils.ContactsUtils;
 import sdlcjt.cn.app.sdlcjtphone.utils.ULogger;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
@@ -74,6 +75,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
+
+        ContactsUtils.getContacts(this);
+        ContactsUtils.getRawContacts(this);
+        ContactsUtils.getData(this);
+
         initVP();
         checkPermission();
     }
