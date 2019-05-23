@@ -233,18 +233,17 @@ public class TabContactFragment extends Fragment implements
     /**
      * 获取联系人的图片
      */
-    public static byte[] getPhoto(final ContentResolver contentResolver, String contactId) {
+    public static byte[] getPhoto(final ContentResolver contentResolver, String raw_contact_id) {
         byte[] bytes = new byte[0];
         Cursor dataCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,
                 new String[]{"data15"},
-                ContactsContract.Data.CONTACT_ID + "=?" + " AND "
-                        + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "'",
-                new String[]{String.valueOf(contactId)}, null);
+                "raw_contact_id =? AND  mimetype=?",
+                new String[]{String.valueOf(raw_contact_id), ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE}, null);
         if (dataCursor != null) {
             if (dataCursor.getCount() > 0) {
                 dataCursor.moveToFirst();
                 bytes = dataCursor.getBlob(dataCursor.getColumnIndex("data15"));
-
+                ULogger.e("get photo,raw_contact_id="+raw_contact_id+",mimetype=vnd.android.cursor.item/photo");
             }
             dataCursor.close();
         }
@@ -299,7 +298,7 @@ public class TabContactFragment extends Fragment implements
                         }
                     }
                     if (!TextUtils.isEmpty(phone)) {
-                        sb.append("\nraw_contact_id="+raw_contact_id+",name="+name);
+                        sb.append("\nraw_contact_id=" + raw_contact_id + ",name=" + name);
                         Person person = new Person(raw_contact_id, mimetypeforname, mimetypeforphone, name, phoneList, bytes);
                         list.add(person);
                     }
@@ -307,7 +306,7 @@ public class TabContactFragment extends Fragment implements
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ULogger.e("TabContact\n"+sb.toString());
+                        ULogger.e("TabContact\n" + sb.toString());
                         //对集合排序
                         Collections.sort(list, new Comparator<Person>() {
                             @Override
@@ -317,10 +316,9 @@ public class TabContactFragment extends Fragment implements
                             }
                         });
                         initListView(list);
-                        if (list.size() == 0){
+                        if (list.size() == 0) {
                             tvContactNum.setVisibility(View.GONE);
-                        }
-                        else {
+                        } else {
                             tvContactNum.setText(list.size() + "位联系人");
                         }
                     }

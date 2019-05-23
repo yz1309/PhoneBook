@@ -5,10 +5,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +22,6 @@ import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +36,7 @@ import sdlcjt.cn.app.sdlcjtphone.contact.bean.PersonResultEvent;
 import sdlcjt.cn.app.sdlcjtphone.entity.StatusResultEvent;
 import sdlcjt.cn.app.sdlcjtphone.utils.AndroidsUtils;
 import sdlcjt.cn.app.sdlcjtphone.utils.PhotoFromPhotoAlbum;
+import sdlcjt.cn.app.sdlcjtphone.utils.ULogger;
 
 /**
  * 联系人编辑
@@ -48,6 +46,7 @@ public class ContactEditActivity extends AppCompatActivity {
     private Person person;
     private ContactPhoneAddAdapter mAdapter;
     private Bitmap bitmap = null;
+    private byte[] bytes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +116,7 @@ public class ContactEditActivity extends AppCompatActivity {
             if (loacalBitmap != null) {
                 bitmap = loacalBitmap;
                 ivHeader.setImageBitmap(loacalBitmap);
+                bytes = AndroidsUtils.bitmap2Bytes(imageZoom(bitmap));
             }
         }
 
@@ -143,13 +143,14 @@ public class ContactEditActivity extends AppCompatActivity {
                     // 向data添加数据
                     Uri uriData = ContactsContract.Data.CONTENT_URI;
 
+
                     if (bitmap != null) {
                         //添加头像
                         ContentProviderOperation operationHeaderPic = ContentProviderOperation
                                 .newInsert(uriData).withValueBackReference("raw_contact_id", 0)
                                 //withValueBackReference的第二个参数表示引用operations[0]的操作的返回id作为此值
                                 .withValue("mimetype", "vnd.android.cursor.item/photo")
-                                .withValue("data15", AndroidsUtils.bitmap2Bytes(bitmap))
+                                .withValue("data15", bytes)
                                 .build();
                         operations.add(operationHeaderPic);
                     }
@@ -244,28 +245,38 @@ public class ContactEditActivity extends AppCompatActivity {
             public void run() {
                 try {
                     // TODO 删除掉该联系人下的所有电话号码
-                    ArrayList<ContentProviderOperation> opsDel = new ArrayList<>();
-                    opsDel.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                    ArrayList<ContentProviderOperation> opsDelPhone = new ArrayList<>();
+                    opsDelPhone.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
                             .withSelection("raw_contact_id = ? and mimetype = ? ", new String[]{String.valueOf(person.getRaw_contact_id()), "vnd.android.cursor.item/phone_v2"})
                             .build());
-                    getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsDel);
+
+                    getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsDelPhone);
 
                     ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
                     if (bitmap != null) {
-                        int bitmapSize = getBitmapSize(bitmap);
-                        // 文件大小不能超过2583684
-                        byte[] bytes = AndroidsUtils.bitmap2Bytes(bitmap);
-                        if (bytes.length >= 2583684) {
-                            bytes = AndroidsUtils.bitmap2Bytes(comp(bitmap));
-                        }
-                        ContentValues valuesHeaderPic = new ContentValues();
+                        ArrayList<ContentProviderOperation> opsDelPic = new ArrayList<>();
+                        opsDelPic.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                                .withSelection("raw_contact_id = ? and mimetype = ? ", new String[]{String.valueOf(person.getRaw_contact_id()), "vnd.android.cursor.item/photo"})
+                                .build());
+                        getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsDelPic);
+
+                        /*ContentValues valuesHeaderPic = new ContentValues();
                         // 更新联系人头像
-                        valuesHeaderPic.put("data15", AndroidsUtils.bitmap2Bytes(imageZoom(bitmap)));
+                        valuesHeaderPic.put("data15", bytes);
                         ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                                 .withValues(valuesHeaderPic)
                                 .withSelection("raw_contact_id = ? and mimetype = ? ", new String[]{String.valueOf(person.getRaw_contact_id()), "vnd.android.cursor.item/photo"})
-                                .build());
+                                .build());*/
+                        ContentProviderOperation operationHeaderPic = ContentProviderOperation
+                                .newInsert(ContactsContract.Data.CONTENT_URI)
+                                .withValue("raw_contact_id", person.getRaw_contact_id())
+                                .withValue("mimetype", "vnd.android.cursor.item/photo")
+                                .withValue("data15", bytes)
+                                .build();
+                        ops.add(operationHeaderPic);
+
+                        ULogger.e("update photo,raw_contact_id=" + person.getRaw_contact_id() + ",mimetype=vnd.android.cursor.item/photo");
                     }
 
                     ContentValues valuesOne = new ContentValues();
@@ -365,67 +376,6 @@ public class ContactEditActivity extends AppCompatActivity {
         matrix.postScale(scaleWidth, scaleHeight);
         Bitmap bitmap = Bitmap.createBitmap(bgimage, 0, 0, (int) width,
                 (int) height, matrix, true);
-        return bitmap;
-    }
-    /**
-     * 得到bitmap的大小
-     */
-    public static int getBitmapSize(Bitmap bitmap) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {    //API 19
-            return bitmap.getAllocationByteCount();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {//API 12
-            return bitmap.getByteCount();
-        }
-        // 在低版本中用一行的字节x高度
-        return bitmap.getRowBytes() * bitmap.getHeight();
-    }
-
-    private Bitmap comp(Bitmap image) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        if (baos.toByteArray().length / 1024 > 1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
-            baos.reset();//重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里压缩50%，把压缩后的数据存放到baos中
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
-        BitmapFactory.Options newOpts = new BitmapFactory.Options();
-        //开始读入图片，此时把options.inJustDecodeBounds 设回true了
-        newOpts.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-        newOpts.inJustDecodeBounds = false;
-        int w = newOpts.outWidth;
-        int h = newOpts.outHeight;
-        //现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-        float hh = 800f;//这里设置高度为800f
-        float ww = 480f;//这里设置宽度为480f
-        //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;//be=1表示不缩放
-        if (w > h && w > ww) {//如果宽度大的话根据宽度固定大小缩放
-            be = (int) (newOpts.outWidth / ww);
-        } else if (w < h && h > hh) {//如果高度高的话根据宽度固定大小缩放
-            be = (int) (newOpts.outHeight / hh);
-        }
-        if (be <= 0)
-            be = 1;
-        newOpts.inSampleSize = be;//设置缩放比例
-        //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
-        isBm = new ByteArrayInputStream(baos.toByteArray());
-        bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-        return compressImage(bitmap);//压缩好比例大小后再进行质量压缩
-    }
-
-    private Bitmap compressImage(Bitmap image) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 100) {    //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;//每次都减少10
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
         return bitmap;
     }
 
