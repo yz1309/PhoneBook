@@ -99,15 +99,29 @@ public class TabCallFragment extends Fragment {
                         phoneList.add(phone);
                         Person person = new Person(name, phoneList);
 
-                        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection,
-                                ContactsContract.CommonDataKinds.Phone.NUMBER + "=?",
-                                new String[]{phone}, null);
-                        if (cursor != null) {
-                            while (cursor.moveToNext()) {
-                                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                        //如果名字为空，在通讯录查询一次有没有对应联系人
+                        // 通过手机号码和mimetypes查询得到raw_contact_id
+                        // 通过raw_contact_id得到data1的值
+                        Cursor cursorRawContactId = getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
+                                new String[]{"raw_contact_id", "data1", "mimetype"},
+                                "data1 = ? and mimetype = ? ", new String[]{phone, "vnd.android.cursor.item/phone_v2"}, null);
+                        if (cursorRawContactId.getCount() > 0) {
+                            cursorRawContactId.moveToFirst();
+                            String raw_contact_id = cursorRawContactId.getString(cursorRawContactId.getColumnIndex("raw_contact_id"));
+
+                            Cursor cursorName = getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
+                                    new String[]{"raw_contact_id", "data1", "mimetype"},
+                                    "raw_contact_id = ? and mimetype = ? ", new String[]{raw_contact_id, "vnd.android.cursor.item/name"}, null);
+                            if (cursorName.getCount() > 0) {
+                                cursorName.moveToFirst();
+                                name = cursorName.getString(cursorName.getColumnIndex("data1"));
                             }
-                            cursor.close();
+                            cursorName.close();
                         }
+                        else {
+                            name = "";
+                        }
+                        cursorRawContactId.close();
                         person.setName(name);
                         list.add(person);
                     }
